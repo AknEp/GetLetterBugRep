@@ -72,7 +72,47 @@ bool HelloWorld::init()
     // add the sprite as a child to this layer
     this->addChild(sprite, 0);
     
+    labelBugReproduction();
+    
     return true;
+}
+
+void HelloWorld::labelBugReproduction()
+{
+    Size visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    
+    auto label = Label::createWithTTF("When I'm drivin' in my car. And the man comes on the radio. He's tellin' me more and more. About some useless information. Supposed to drive my imagination.", "fonts/Marker Felt.ttf", 32);
+    label->setPosition(Vec2(origin.x + visibleSize.width/2,
+                            origin.y + visibleSize.height - label->getContentSize().height));
+    label->setContentSize(visibleSize/2);
+    
+    this->addChild(label, 2);
+    
+    // wait until draw
+    this->runAction(CallFunc::create([label](){
+        for( int i=0; i<(label->getStringLength() + label->getStringNumLines()); i++ ){
+            auto letterSprite = label->getLetter(i);
+            // setOpacity or setColor , FadeInOut-Action etc...
+            // such makes collapse characters after setString...
+            if( letterSprite ){
+                letterSprite->setOpacity(200);
+            }
+        }
+    }));
+    
+    // next.
+    this->runAction(Sequence::create(DelayTime::create(3),
+                                     CallFunc::create([label]()
+                                                      {
+                                                          // it renders collapsed.
+                                                          label->setString("I was born in a cross-fire hurricane. And I howled at my ma in the drivin' rain. But it's alright now. In fact it's a gas , but it's alright. I'm Jumping Jack Flash. It's a gas , gas , gas");
+                                                      }
+                                                      ),
+                                     NULL)
+                    );
+    
+
 }
 
 
